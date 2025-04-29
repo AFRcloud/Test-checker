@@ -1,15 +1,12 @@
 const fs = require("fs");
 const axios = require("axios");
 const readline = require("readline");
-const pLimit = require("p-limit");
 
 const API_URL = "https://api.jb8fd7grgd.workers.dev";
 const TIMEOUT_MS = 10000;
 const INPUT_FILE = "ProxyList.txt";
 const OUTPUT_FILE = "results.txt";
 const CONCURRENCY = 50; // jumlah request bersamaan
-
-const limit = pLimit(CONCURRENCY);
 
 async function checkProxy(ip, port) {
   const url = `${API_URL}/${ip}:${port}`;
@@ -19,10 +16,19 @@ async function checkProxy(ip, port) {
     if (data && data.proxyip) {
       return `${data.proxy},${data.port},${data.countryCode},${data.org}`;
     }
-  } catch (error) {
-    // abaikan
-  }
+  } catch (error) {}
   return null;
+}
+
+async function runInBatches(tasks, batchSize) {
+  const results = [];
+  for (let i = 0; i < tasks.length; i += batchSize) {
+    const batch = tasks.slice(i, i + batchSize);
+    const res = await Promise.all(batch.map(task => task()));
+    results.push(...res);
+    console.log(`Processed: ${Math.min(i + batchSize, tasks.length)} / ${tasks.length}`);
+  }
+  return results;
 }
 
 async function main() {
@@ -32,7 +38,6 @@ async function main() {
     crlfDelay: Infinity,
   });
 
-  const output = fs.createWriteStream(OUTPUT_FILE, { flags: "w" });
   const tasks = [];
 
   for await (const line of rl) {
@@ -41,18 +46,18 @@ async function main() {
     const ip = parts[0].trim();
     const port = parts[1].trim();
 
-    const task = limit(() =>
-      checkProxy(ip, port).then((result) => {
-        if (result) {
-          console.log(`Live: ${result}`);
-          output.write(result + "\n");
-        }
-      })
-    );
-    tasks.push(task);
+    tasks.push(() => checkProxy(ip, port));
   }
 
-  await Promise.all(tasks);
+  const results = await runInBatches(tasks, CONCURRENCY);
+
+  const output = fs.createWriteStream(OUTPUT_FILE, { flags: "w" });
+  results.forEach(result => {
+    if (result) {
+      console.log(`Live: ${result}`);
+      output.write(result + "\n");
+    }
+  });
   output.end();
 }
 
