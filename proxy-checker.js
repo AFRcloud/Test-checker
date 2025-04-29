@@ -6,9 +6,7 @@ const API_URL = "https://api.jb8fd7grgd.workers.dev";
 const TIMEOUT_MS = 10000;
 const INPUT_FILE = "ProxyList.txt";
 const OUTPUT_FILE = "results.txt";
-
-// Daftar ekstensi domain yang perlu dihapus
-const domainExtensions = ['com', 'org', 'net', 'edu', 'gov', 'inc', 'co', 'io'];
+const BATCH_SIZE = 300;
 
 function sanitizeOrg(org) {
   // Hapus koma dan titik, ganti dengan spasi
@@ -33,42 +31,53 @@ async function checkProxy(ip, port) {
     const response = await axios.get(url, { timeout: TIMEOUT_MS });
     const data = response.data[0];
     if (data && data.proxyip) {
-      const org = sanitizeOrg(data.org); // Sanitasi nama organisasi
+      const org = sanitizeOrg(data.org || '');
       return `${data.proxy},${data.port},${data.countryCode},${org}`;
     }
-  } catch (error) {
-    // Abaikan jika terjadi error
-  }
+  } catch (_) {}
   return null;
 }
 
-async function main() {
-  const fileStream = fs.createReadStream(INPUT_FILE);
-  const rl = readline.createInterface({
-    input: fileStream,
-    crlfDelay: Infinity,
-  });
-
-  const output = fs.createWriteStream(OUTPUT_FILE, { flags: "w" });
-  const tasks = [];
-
-  for await (const line of rl) {
-    const parts = line.split(",");
-    if (parts.length < 2) continue;
-    const ip = parts[0].trim();
-    const port = parts[1].trim();
-
-    const task = checkProxy(ip, port).then((result) => {
+async function processBatch(batch, output, counter) {
+  const promises = batch.map(([ip, port]) =>
+    checkProxy(ip, port).then(result => {
       if (result) {
         console.log(`Live: ${result}`);
         output.write(result + "\n");
       }
-    });
-    tasks.push(task);
+    })
+  );
+  await Promise.all(promises);
+  console.log(`Processed ${counter} proxies...`);
+}
+
+async function main() {
+  const fileStream = fs.createReadStream(INPUT_FILE);
+  const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
+  const output = fs.createWriteStream(OUTPUT_FILE, { flags: "w" });
+
+  let batch = [];
+  let total = 0;
+
+  for await (const line of rl) {
+    const parts = line.split(",");
+    if (parts.length < 2) continue;
+
+    batch.push([parts[0].trim(), parts[1].trim()]);
+    total++;
+
+    if (batch.length >= BATCH_SIZE) {
+      await processBatch(batch, output, total);
+      batch = [];
+    }
   }
 
-  await Promise.all(tasks);
+  if (batch.length > 0) {
+    await processBatch(batch, output, total);
+  }
+
   output.end();
+  console.log("Proxy checking completed.");
 }
 
 main();
