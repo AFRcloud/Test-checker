@@ -1,0 +1,28 @@
+name: Proxy Checker
+
+on:
+  workflow_dispatch: # Jalankan manual dari GitHub UI
+
+jobs:
+  check-proxy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install axios
+        run: npm install axios
+
+      - name: Run Proxy Checker
+        run: node proxy-checker.js
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: live-proxies
+          path: results.txt
