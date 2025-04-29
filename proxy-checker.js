@@ -1,11 +1,15 @@
 const fs = require("fs");
 const axios = require("axios");
 const readline = require("readline");
+const pLimit = require("p-limit");
 
-const API_URL = "https://api.jb8fd7grgd.workers.dev";  // Ganti dengan URL API Anda
+const API_URL = "https://api.jb8fd7grgd.workers.dev";
 const TIMEOUT_MS = 10000;
-const INPUT_FILE = "ProxyList.txt";  // Nama file input yang berisi daftar IP dan Port
-const OUTPUT_FILE = "results.txt";  // Nama file output untuk hasil pengecekan
+const INPUT_FILE = "ProxyList.txt";
+const OUTPUT_FILE = "results.txt";
+const CONCURRENCY = 50; // jumlah request bersamaan
+
+const limit = pLimit(CONCURRENCY);
 
 async function checkProxy(ip, port) {
   const url = `${API_URL}/${ip}:${port}`;
@@ -16,7 +20,7 @@ async function checkProxy(ip, port) {
       return `${data.proxy},${data.port},${data.countryCode},${data.org}`;
     }
   } catch (error) {
-    // Abaikan kesalahan
+    // abaikan
   }
   return null;
 }
@@ -29,27 +33,34 @@ async function main() {
   });
 
   const output = fs.createWriteStream(OUTPUT_FILE, { flags: "w" });
-
   const tasks = [];
+  const results = [];
+
   for await (const line of rl) {
     const parts = line.split(",");
     if (parts.length < 2) continue;
     const ip = parts[0].trim();
     const port = parts[1].trim();
 
-    const task = checkProxy(ip, port).then((result) => {
-      if (result) {
-        console.log(`Live: ${result}`);
-        output.write(result + "\n");
-      }
-    });
-
+    const task = limit(() =>
+      checkProxy(ip, port).then((result) => {
+        if (result) {
+          console.log(`Live: ${result}`);
+          results.push(result);  // Menyimpan hasil dalam array sesuai urutan input
+        }
+      })
+    );
     tasks.push(task);
   }
 
   await Promise.all(tasks);
+
+  // Menulis hasil dengan urutan yang konsisten
+  results.forEach((result) => {
+    output.write(result + "\n");
+  });
+
   output.end();
-  console.log("Pengecekan selesai. Hasil disimpan di", OUTPUT_FILE);
 }
 
 main();
