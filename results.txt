@@ -1,48 +1,47 @@
+172.93.165.228,443,HK,Group LLC
 154.83.86.52,55555,HK,AKILE LTD
-138.2.89.238,43254,SG,Oracle Corporation
-54.169.229.188,443,SG,Amazon Technologies Inc.
-146.235.18.248,45137,SG,Oracle Corporation
-43.218.77.16,443,ID,Amazon.com, Inc.
-168.138.166.213,10500,SG,Oracle Public Cloud
-43.218.77.16,1443,ID,Amazon.com, Inc.
-51.79.158.126,443,SG,Mitchell, Smith
-172.232.239.151,587,ID,Linode
 129.150.58.86,57621,SG,Oracle Corporation
-103.6.207.108,8080,ID,Pt Pusat Media Indonesia
+54.169.229.188,443,SG,Amazon Technologies Inc.
+43.218.77.16,443,ID,Amazon.com, Inc.
+43.218.77.16,1443,ID,Amazon.com, Inc.
+172.232.239.151,587,ID,Linode
+47.74.254.191,8900,SG,Alibaba Cloud Sg
+146.235.18.248,45137,SG,Oracle Corporation
+123.253.33.182,12306,MY,Gigabit Hosting Sdn Bhd
 194.127.193.240,50791,SG,Greencloud LLC
 213.35.108.135,12596,SG,Oracle Svenska Ab
-123.253.33.182,12306,MY,Gigabit Hosting Sdn Bhd
+168.138.166.213,10500,SG,Oracle Public Cloud
 161.117.249.114,2025,SG,1 Raffles Place, 00 One Raffles Place
-47.245.95.160,1443,SG,Alibaba Cloud LLC
-47.74.254.191,8900,SG,Alibaba Cloud Sg
 8.222.243.73,26385,SG,Alibaba Cloud singapore Private Limited
-8.215.196.18,587,ID,Alibaba Cloud singapore Private Limited
-139.162.33.248,587,SG,Linode, LLC
-194.127.193.124,24467,SG,Greencloud LLC
-47.236.22.194,52324,SG,Alibaba Cloud LLC
 178.128.80.43,443,SG,DIGITALOCEAN
-138.2.74.219,28616,SG,Oracle Corporation
-138.2.77.179,30018,SG,Oracle Corporation
-47.236.119.190,51342,SG,Alibaba Cloud LLC
-138.2.95.33,17465,SG,Oracle Corporation
-47.236.25.107,27903,SG,Alibaba Cloud LLC
-38.181.70.7,16240,SG,Eons Data Communications Limited
-129.150.36.188,53435,SG,Oracle Corporation
+8.215.196.18,587,ID,Alibaba Cloud singapore Private Limited
+51.79.158.126,443,SG,Mitchell, Smith
+138.2.89.238,43254,SG,Oracle Corporation
+203.194.112.119,8443,ID,Rumahweb
+203.194.112.119,2053,ID,Rumahweb
+139.162.33.248,587,SG,Linode, LLC
 213.35.107.73,443,SG,Oracle Svenska Ab
+192.53.113.156,587,SG,Linode, LLC
 51.79.254.182,443,SG,Mitchell, Smith
 129.150.49.58,18650,SG,Oracle Corporation
+47.236.22.194,52324,SG,Alibaba Cloud LLC
+138.2.74.219,28616,SG,Oracle Corporation
+194.127.193.124,24467,SG,Greencloud LLC
+129.150.36.188,53435,SG,Oracle Corporation
+47.236.25.107,27903,SG,Alibaba Cloud LLC
+47.236.181.185,8443,SG,Alibaba Cloud LLC
 139.180.215.77,57878,SG,SGP VULTR CUST
-192.53.113.156,587,SG,Linode, LLC
+8.222.129.175,58808,SG,Alibaba Cloud singapore Private Limited
+47.245.95.160,1443,SG,Alibaba Cloud LLC
 8.219.237.57,31523,SG,Alibaba Cloud singapore Private Limited
-45.76.183.217,49292,SG,Vultr Holdings, LLC
-45.32.100.46,13802,SG,The Constant Company, LLC
+47.236.119.190,51342,SG,Alibaba Cloud LLC
+138.2.95.33,17465,SG,Oracle Corporation
+138.2.95.61,1111,SG,Oracle Corporation
+38.181.70.7,16240,SG,Eons Data Communications Limited
+138.2.77.179,30018,SG,Oracle Corporation
 168.138.170.211,53702,SG,Oracle Public Cloud
 8.222.220.81,25435,SG,Alibaba Cloud singapore Private Limited
-47.236.181.185,8443,SG,Alibaba Cloud LLC
-8.222.129.175,58808,SG,Alibaba Cloud singapore Private Limited
-172.93.165.228,443,HK,Group LLC
-138.2.95.61,1111,SG,Oracle Corporation
+45.32.100.46,13802,SG,The Constant Company, LLC
+45.76.183.217,49292,SG,Vultr Holdings, LLC
 43.245.198.240,587,SG,Iptelecom Singapore Network
 185.114.78.230,443,SG,ARYAKA SDN SIN1
-203.194.112.119,2053,ID,Rumahweb
-203.194.112.119,8443,ID,Rumahweb
