@@ -7,15 +7,14 @@ const TIMEOUT_MS = 10000;
 const INPUT_FILE = "ProxyList.txt";
 const OUTPUT_FILE = "results.txt";
 
-// Daftar ekstensi yang akan dihapus
+// Daftar ekstensi domain yang perlu dihapus
 const domainExtensions = ['com', 'org', 'net', 'edu', 'gov', 'inc', 'co', 'io'];
 
 function sanitizeOrg(org) {
-  // Menghapus ekstensi jika ada (baik dengan titik atau tanpa titik)
+  // Menghapus ekstensi domain yang terdeteksi (baik dengan titik atau tanpa titik)
   domainExtensions.forEach(ext => {
-    // Menangani ekstensi tanpa titik di depan
-    const regex = new RegExp(`\\s?${ext}$`, 'i');
-    org = org.replace(regex, '');
+    const regex = new RegExp(`\\s?${ext}\\s?`, 'i'); // Untuk ekstensi domain dengan atau tanpa spasi
+    org = org.replace(regex, ''); // Hapus ekstensi dari akhir string
   });
 
   // Ganti koma dan titik dengan spasi, hilangkan spasi ganda dan trim
@@ -34,7 +33,7 @@ async function checkProxy(ip, port) {
       return `${data.proxy},${data.port},${data.countryCode},${org}`;
     }
   } catch (error) {
-    // abaikan
+    // Abaikan jika terjadi error
   }
   return null;
 }
