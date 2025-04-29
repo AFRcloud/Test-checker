@@ -1,7 +1,7 @@
 name: Proxy Checker
 
 on:
-  workflow_dispatch: # Jalankan manual dari GitHub UI
+  workflow_dispatch:
 
 jobs:
   check-proxy:
@@ -22,7 +22,7 @@ jobs:
         run: node proxy-checker.js
 
       - name: Upload Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: live-proxies
           path: results.txt
