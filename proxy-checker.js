@@ -2,11 +2,10 @@ const fs = require("fs");
 const axios = require("axios");
 const readline = require("readline");
 
-const API_URL = "https://api.jb8fd7grgd.workers.dev";
+const API_URL = "https://api.jb8fd7grgd.workers.dev";  // Ganti dengan URL API Anda
 const TIMEOUT_MS = 10000;
-const INPUT_FILE = "ProxyList.txt";
-const OUTPUT_FILE = "results.txt";
-const CONCURRENCY = 50; // jumlah request bersamaan
+const INPUT_FILE = "ProxyList.txt";  // Nama file input yang berisi daftar IP dan Port
+const OUTPUT_FILE = "results.txt";  // Nama file output untuk hasil pengecekan
 
 async function checkProxy(ip, port) {
   const url = `${API_URL}/${ip}:${port}`;
@@ -16,19 +15,10 @@ async function checkProxy(ip, port) {
     if (data && data.proxyip) {
       return `${data.proxy},${data.port},${data.countryCode},${data.org}`;
     }
-  } catch (error) {}
-  return null;
-}
-
-async function runInBatches(tasks, batchSize) {
-  const results = [];
-  for (let i = 0; i < tasks.length; i += batchSize) {
-    const batch = tasks.slice(i, i + batchSize);
-    const res = await Promise.all(batch.map(task => task()));
-    results.push(...res);
-    console.log(`Processed: ${Math.min(i + batchSize, tasks.length)} / ${tasks.length}`);
+  } catch (error) {
+    // Abaikan kesalahan
   }
-  return results;
+  return null;
 }
 
 async function main() {
@@ -38,27 +28,28 @@ async function main() {
     crlfDelay: Infinity,
   });
 
-  const tasks = [];
+  const output = fs.createWriteStream(OUTPUT_FILE, { flags: "w" });
 
+  const tasks = [];
   for await (const line of rl) {
     const parts = line.split(",");
     if (parts.length < 2) continue;
     const ip = parts[0].trim();
     const port = parts[1].trim();
 
-    tasks.push(() => checkProxy(ip, port));
+    const task = checkProxy(ip, port).then((result) => {
+      if (result) {
+        console.log(`Live: ${result}`);
+        output.write(result + "\n");
+      }
+    });
+
+    tasks.push(task);
   }
 
-  const results = await runInBatches(tasks, CONCURRENCY);
-
-  const output = fs.createWriteStream(OUTPUT_FILE, { flags: "w" });
-  results.forEach(result => {
-    if (result) {
-      console.log(`Live: ${result}`);
-      output.write(result + "\n");
-    }
-  });
+  await Promise.all(tasks);
   output.end();
+  console.log("Pengecekan selesai. Hasil disimpan di", OUTPUT_FILE);
 }
 
 main();
