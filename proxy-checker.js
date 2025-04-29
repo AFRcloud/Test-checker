@@ -8,12 +8,13 @@ const INPUT_FILE = "ProxyList.txt";
 const OUTPUT_FILE = "results.txt";
 const CONCURRENCY = 50; // jumlah request bersamaan
 
-// Fungsi untuk mengganti simbol . dan - dengan spasi, serta menghapus spasi ganda
+// Fungsi untuk mengganti simbol . dan - dengan spasi, menghapus koma dan spasi ganda
 function sanitizeOrg(org) {
   return org
-    .replace(/[.-]/g, ' ')      // Ganti simbol . dan - dengan spasi
-    .replace(/\s+/g, ' ')       // Menghapus spasi ganda
-    .trim();                   // Menghapus spasi di awal dan akhir
+    .replace(/[.-]/g, ' ')        // Ganti simbol . dan - dengan spasi
+    .replace(/,/g, ' ')           // Ganti koma dengan spasi
+    .replace(/\s+/g, ' ')         // Menghapus spasi ganda
+    .trim();                      // Menghapus spasi di awal dan akhir
 }
 
 async function checkProxy(ip, port) {
