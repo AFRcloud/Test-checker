@@ -11,16 +11,20 @@ const OUTPUT_FILE = "results.txt";
 const domainExtensions = ['com', 'org', 'net', 'edu', 'gov', 'inc', 'co', 'io'];
 
 function sanitizeOrg(org) {
-  // Menghapus ekstensi domain yang terdeteksi, hanya jika muncul sebagai kata terpisah
-  domainExtensions.forEach(ext => {
-    const regex = new RegExp(`\\s?${ext}(\\s|$)`, 'i'); // Hapus ekstensi hanya jika ada spasi setelahnya atau di akhir kata
-    org = org.replace(regex, ''); // Hapus ekstensi dari akhir string
-  });
+  // Hapus koma dan titik, ganti dengan spasi
+  org = org.replace(/[,.]/g, ' ');
 
-  // Ganti koma dan titik dengan spasi, hilangkan spasi ganda dan trim
-  org = org.replace(/[,.]+/g, ' ').replace(/\s+/g, ' ').trim();
+  // Pecah menjadi kata-kata
+  const words = org.split(/\s+/);
 
-  return org;
+  // Daftar kata yang harus dihapus
+  const blacklist = ['com', 'org', 'net', 'edu', 'gov', 'inc', 'co', 'io', 'ltd', 'llc'];
+
+  // Buang kata yang ada dalam daftar blacklist
+  const filtered = words.filter(word => !blacklist.includes(word.toLowerCase()));
+
+  // Gabungkan kembali dan hapus spasi ganda
+  return filtered.join(' ').replace(/\s+/g, ' ').trim();
 }
 
 async function checkProxy(ip, port) {
