@@ -1,31 +1,29 @@
-name: Proxy Checker
+name: Cek Proxy Otomatis
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
-  check-proxy:
+  run-proxy-checker:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
 
-      - name: Install axios
-        run: npm install axios
-        
-      - name: Install p-limit
-        run: npm install p-limit
-        
-      - name: Run Proxy Checker
-        run: node proxy-checker.js
+    - name: Install dependencies
+      run: npm install axios
 
-      - name: Upload Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: live-proxies
-          path: results.txt
+    - name: Jalankan pengecekan proxy
+      run: node proxy-checker.js
+
+    - name: Upload hasil cek proxy
+      uses: actions/upload-artifact@v4
+      with:
+        name: hasil-cek-proxy
+        path: results.txt
