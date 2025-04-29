@@ -6,15 +6,20 @@ const API_URL = "https://api.jb8fd7grgd.workers.dev";
 const TIMEOUT_MS = 10000;
 const INPUT_FILE = "ProxyList.txt";
 const OUTPUT_FILE = "results.txt";
-const CONCURRENCY = 50; // jumlah request bersamaan
 
-// Fungsi untuk mengganti simbol . dan - dengan spasi, menghapus koma dan spasi ganda
 function sanitizeOrg(org) {
-  return org
-    .replace(/[.-]/g, ' ')        // Ganti simbol . dan - dengan spasi
-    .replace(/,/g, ' ')           // Ganti koma dengan spasi
-    .replace(/\s+/g, ' ')         // Menghapus spasi ganda
-    .trim();                      // Menghapus spasi di awal dan akhir
+  // Daftar ekstensi yang akan dihapus
+  const domainExtensions = ['.com', '.org', '.net', '.edu', '.gov', '.inc', '.co', '.io'];
+
+  // Menghapus ekstensi jika ada
+  for (const ext of domainExtensions) {
+    org = org.replace(new RegExp(`${ext}$`, 'i'), ''); // Menghapus ekstensi yang ada di akhir
+  }
+
+  // Ganti titik dengan spasi dan hilangkan spasi ganda
+  org = org.replace(/\./g, ' ').replace(/\s+/g, ' ').trim();
+
+  return org;
 }
 
 async function checkProxy(ip, port) {
@@ -23,22 +28,13 @@ async function checkProxy(ip, port) {
     const response = await axios.get(url, { timeout: TIMEOUT_MS });
     const data = response.data[0];
     if (data && data.proxyip) {
-      const sanitizedOrg = sanitizeOrg(data.org);  // Menghapus simbol dan spasi ganda dari org
-      return `${data.proxy},${data.port},${data.countryCode},${sanitizedOrg}`;
+      const org = sanitizeOrg(data.org); // Sanitasi nama organisasi
+      return `${data.proxy},${data.port},${data.countryCode},${org}`;
     }
   } catch (error) {
-    // abaikan jika ada kesalahan
+    // abaikan
   }
   return null;
-}
-
-async function processInBatches(array, batchSize, callback) {
-  let index = 0;
-  while (index < array.length) {
-    const batch = array.slice(index, index + batchSize); // Ambil batch
-    await Promise.all(batch.map(callback));  // Jalankan batch
-    index += batchSize; // Update indeks untuk batch selanjutnya
-  }
 }
 
 async function main() {
@@ -57,19 +53,17 @@ async function main() {
     const ip = parts[0].trim();
     const port = parts[1].trim();
 
-    // Menambahkan tugas pengecekan proxy ke dalam array tasks
-    tasks.push(() => checkProxy(ip, port).then((result) => {
+    const task = checkProxy(ip, port).then((result) => {
       if (result) {
         console.log(`Live: ${result}`);
         output.write(result + "\n");
       }
-    }));
+    });
+    tasks.push(task);
   }
 
-  // Jalankan tugas dalam batch dengan concurrency yang diinginkan
-  await processInBatches(tasks, CONCURRENCY, (task) => task());
-  
-  output.end(); // Selesai menulis file output
+  await Promise.all(tasks);
+  output.end();
 }
 
 main();
