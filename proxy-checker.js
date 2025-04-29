@@ -4,8 +4,20 @@ const PROXY_LIST_URL = 'https://raw.githubusercontent.com/AFRcloud/ProxyList/ref
 
 async function fetchProxyList() { const res = await axios.get(PROXY_LIST_URL); return res.data.split('\n').filter(line => line.trim() !== ''); }
 
-async function checkProxy(ip, port) { const url = ${API_URL}/${ip}:${port}; try { const response = await axios.get(url, { timeout: TIMEOUT_MS }); const data = response.data[0];
+async function checkProxy(ip, port) {
+  const url = `${API_URL}/${ip}:${port}`; // <- gunakan backtick
+  try {
+    const response = await axios.get(url, { timeout: TIMEOUT_MS });
+    const data = response.data[0];
 
+    if (data && data.proxyip) {
+      return `${data.proxy},${data.port},${data.countryCode},${data.org}`;
+    }
+  } catch (error) {
+    // Ignore errors
+  }
+  return null;
+}
 if (data && data.proxyip) {
   return `${data.proxy},${data.port},${data.countryCode},${data.org}`;
 }
