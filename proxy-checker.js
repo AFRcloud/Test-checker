@@ -11,9 +11,9 @@ const OUTPUT_FILE = "results.txt";
 const domainExtensions = ['com', 'org', 'net', 'edu', 'gov', 'inc', 'co', 'io'];
 
 function sanitizeOrg(org) {
-  // Menghapus ekstensi domain yang terdeteksi (baik dengan titik atau tanpa titik)
+  // Menghapus ekstensi domain yang terdeteksi, hanya jika muncul sebagai kata terpisah
   domainExtensions.forEach(ext => {
-    const regex = new RegExp(`\\s?${ext}\\s?`, 'i'); // Untuk ekstensi domain dengan atau tanpa spasi
+    const regex = new RegExp(`\\s?${ext}(\\s|$)`, 'i'); // Hapus ekstensi hanya jika ada spasi setelahnya atau di akhir kata
     org = org.replace(regex, ''); // Hapus ekstensi dari akhir string
   });
 
