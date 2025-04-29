@@ -8,16 +8,25 @@ const INPUT_FILE = "ProxyList.txt";
 const OUTPUT_FILE = "results.txt";
 const CONCURRENCY = 50; // jumlah request bersamaan
 
+// Fungsi untuk mengganti simbol . dan - dengan spasi, serta menghapus spasi ganda
+function sanitizeOrg(org) {
+  return org
+    .replace(/[.-]/g, ' ')      // Ganti simbol . dan - dengan spasi
+    .replace(/\s+/g, ' ')       // Menghapus spasi ganda
+    .trim();                   // Menghapus spasi di awal dan akhir
+}
+
 async function checkProxy(ip, port) {
   const url = `${API_URL}/${ip}:${port}`;
   try {
     const response = await axios.get(url, { timeout: TIMEOUT_MS });
     const data = response.data[0];
     if (data && data.proxyip) {
-      return `${data.proxy},${data.port},${data.countryCode},${data.org}`;
+      const sanitizedOrg = sanitizeOrg(data.org);  // Menghapus simbol dan spasi ganda dari org
+      return `${data.proxy},${data.port},${data.countryCode},${sanitizedOrg}`;
     }
   } catch (error) {
-    // abaikan
+    // abaikan jika ada kesalahan
   }
   return null;
 }
