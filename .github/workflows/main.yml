@@ -1,29 +1,33 @@
-name: Cek Proxy Otomatis
+name: Proxy Checker
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main  # Jalankan workflow ketika ada push ke branch 'main'
 
 jobs:
-  run-proxy-checker:
+  proxy-check:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 18
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install dependencies
-      run: npm install axios
+      - name: Install dependencies
+        run: npm install axios
 
-    - name: Jalankan pengecekan proxy
-      run: node proxy-checker.js
+      - name: Run proxy checker script
+        run: node proxy-checker.js
 
-    - name: Upload hasil cek proxy
-      uses: actions/upload-artifact@v4
-      with:
-        name: hasil-cek-proxy
-        path: results.txt
+      - name: Commit results to repo
+        run: |
+          git config --global user.name "Your Name"
+          git config --global user.email "youremail@example.com"
+          git add results.txt
+          git commit -m "Add results.txt with proxy check results"
+          git push
